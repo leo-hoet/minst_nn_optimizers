@@ -1,0 +1,4 @@
+minstvenv/
+venv/
+.idea/
+__pycache__/
