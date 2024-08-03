@@ -13,6 +13,15 @@ def _random_weights():
     ]
 
 
+def zero_weights():
+    return [
+        [],
+        [np.zeros((784, 128)), np.zeros(128)],
+        [np.zeros((128, 64)), np.zeros(64)],
+        [np.zeros((64, 10)), np.zeros(10)]
+    ]
+
+
 class NNModel:
     def __init__(self):
         inputs = Input(shape=(784,))
