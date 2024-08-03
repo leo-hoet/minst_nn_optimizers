@@ -2,7 +2,7 @@ import time
 
 import tensorflow as tf
 
-from model import NNModel
+from model import NNModel, zero_weights
 
 # Load and preprocess the MNIST dataset
 (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
@@ -22,8 +22,14 @@ def run():
     t1 = time.perf_counter()
     print(f"ELAPSED TIME {t1-t0} ms {metrics=}")
 
-for i in range(10):
-    run()
+
+model.set_custom_weights(zero_weights())
+metrics = model.metrics(x_test, y_test)
+print(metrics)
+
+model.randomize_weights()
+metrics = model.metrics(x_test, y_test)
+print(metrics)
 
 
 
