@@ -1,3 +1,4 @@
+import math
 import numpy as np
 from keras import Input, Model
 from keras.src.layers import Dense
@@ -38,10 +39,53 @@ class NNModel:
         self.model = model
         self.randomize_weights()
 
+    @property
+    def len_params(self):
+        return self.model.count_params()
+
+    def _deflatten_weights(self, w):
+        weights = []
+        start = 0
+
+        # Empty list for the input layer
+        weights.append([])
+
+        # First hidden layer (784, 128) and bias (128,)
+        end = start + 784 * 128
+        weights.append([w[start:end].reshape(784, 128)])
+        start = end
+
+        end = start + 128
+        weights[-1].append(w[start:end])
+        start = end
+
+        # Second hidden layer (128, 64) and bias (64,)
+        end = start + 128 * 64
+        weights.append([w[start:end].reshape(128, 64)])
+        start = end
+
+        end = start + 64
+        weights[-1].append(w[start:end])
+        start = end
+
+        # Output layer (64, 10) and bias (10,)
+        end = start + 64 * 10
+        weights.append([w[start:end].reshape(64, 10)])
+        start = end
+
+        end = start + 10
+        weights[-1].append(w[start:end])
+
+        return weights
+
     def randomize_weights(self):
         self.set_custom_weights(_random_weights())
 
     def set_custom_weights(self, weights):
+        shape = getattr(weights, 'shape', None)
+        if shape and len(shape) == 1:
+            weights = self._deflatten_weights(weights)
+
         for layer, w in zip(self.model.layers, weights):
             layer.set_weights(w)
 
