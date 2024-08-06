@@ -108,13 +108,17 @@ class NNModel:
 
         # Calculate metrics
         accuracy = accuracy_score(y_true, y_pred_classes)
-        precision = precision_score(y_true, y_pred_classes, average='weighted')
+        # precision = precision_score(y_true, y_pred_classes, average='weighted')
         recall = recall_score(y_true, y_pred_classes, average='weighted')
         f1 = f1_score(y_true, y_pred_classes, average='weighted')
 
         return {
             'accuracy': accuracy,
-            'precision': precision,
+            # 'precision': precision,
             'recall': recall,
             'f1_score': f1
         }
+
+    def fitness(self, x_test, y_test) -> float:
+        metrics = self.metrics(x_test, y_test)
+        return metrics['accuracy']

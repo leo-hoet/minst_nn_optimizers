@@ -1,4 +1,5 @@
 
+import numpy as np
 from model import NNModel
 
 
@@ -16,8 +17,57 @@ class PSO:
         self._c1 = c_local
         self._c2 = c_global
 
+        self._n_particles = n_particles
         self._model = NNModel()
-        self._particles = [Particle() for _ in range(n_particles)]
 
-    def run(self, epochs: int = 100) -> Best:
-        raise NotImplementedError("TODO ESTO")
+    def randomize_arr(self):
+        return np.random.random((self._n_particles, self._model.len_params))
+
+    def ind_fitness(self, pos) -> float:
+        self._model.set_custom_weights(pos)
+        return self._model.fitness(self._x_test, self._y_test)
+
+    def update_vel(self, r1, r2, curr_vel, bests_pos, pos, swarm_best):
+        new_vel = self._w * curr_vel  # Interia
+        new_vel += (self._c1 * r1 * (bests_pos - pos).T).T  # Local best
+        new_vel += (self._c2 * r2 * (swarm_best - pos).T).T  # Global best
+
+        assert new_vel.shape == curr_vel.shape, "New vel has not the same shape as input"
+
+        return new_vel
+
+    def run(self, epochs: int = 100):
+        def f(row):
+            return self.ind_fitness(row)
+
+        pos = self.randomize_arr()
+        bests = np.copy(pos)
+        vel = self.randomize_arr()
+        fitness = np.apply_along_axis(f, 1, pos)
+
+        swarm_best_pos_idx = np.argmax(fitness)
+        swarm_best_pos = pos[swarm_best_pos_idx]
+        swarn_best_fitness = np.max(fitness)
+
+        for i in range(epochs):
+
+            r1 = np.random.uniform(0, 1, size=self._n_particles)
+            r2 = np.random.uniform(0, 1, size=self._n_particles)
+
+            vel = self.update_vel(r1, r2, vel, bests, pos, swarm_best_pos)
+
+            assert vel.shape == pos.shape
+            pos += vel
+
+            # Update bests positions
+            new_fitness = np.apply_along_axis(f, 1, pos)
+            idx_better_fitness = np.where(new_fitness > fitness)
+            bests[idx_better_fitness] = pos[idx_better_fitness]
+
+            # Update global best
+            if np.max(new_fitness) > swarn_best_fitness:
+                swarm_best_pos_idx = np.argmax(new_fitness)
+                swarn_best_fitness = new_fitness[swarm_best_pos_idx]
+                swarm_best_pos = pos[swarm_best_pos_idx]
+
+            print(f"Iter {i} best fitness: {np.max(new_fitness)}")
