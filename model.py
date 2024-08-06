@@ -46,10 +46,9 @@ class NNModel:
             layer.set_weights(w)
 
     def predict_digit(self, image):
-        image = image.reshape(1, 784)
         prediction = self.model.predict(image)
         return np.argmax(prediction)
-    
+
     def get_weights_as_numpy(self):
         weights_list = []
         for layer in self.model.layers:
@@ -59,10 +58,6 @@ class NNModel:
         return np.concatenate(weights_list)
 
     def metrics(self, X_test, y_true):
-        # Reshape X_test if necessary
-        if X_test.ndim == 3:
-            X_test = X_test.reshape(-1, 784)
-
         # Get predictions
         y_pred = self.model.predict(X_test)
         y_pred_classes = np.argmax(y_pred, axis=1)
