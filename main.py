@@ -41,9 +41,9 @@ def main():
         w=0.2,
         c_local=10,
         c_global=10,
-        n_particles=20
+        n_particles=30
     )
-    p.run()
+    p.run(epochs=20)
 
 
 if __name__ == '__main__':

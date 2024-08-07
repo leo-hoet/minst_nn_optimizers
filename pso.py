@@ -1,5 +1,7 @@
 
+import collections
 import numpy as np
+from sklearn.metrics import classification_report
 from model import NNModel
 
 
@@ -10,8 +12,9 @@ class PSO:
 
         self._x_train = x_train.reshape(x_train.shape[0], 784)
         self._y_train = y_train
-        self._x_test = x_test.reshape(x_test.shape[0], 784)
-        self._y_test = y_test
+        self._x_test = x_test.reshape(x_test.shape[0], 784)[:100]
+        self._y_test = y_test[:100]
+        print(collections.Counter(self._y_test))  # Print ocurrences of each class
 
         self._w = w
         self._c1 = c_local
@@ -35,6 +38,17 @@ class PSO:
         assert new_vel.shape == curr_vel.shape, "New vel has not the same shape as input"
 
         return new_vel
+
+    def print_report(self, w):
+        y_true = self._y_test
+        self._model.set_custom_weights(w)
+
+        predicted = self._model.model.predict(self._x_test)
+        predicted = np.argmax(predicted, axis=1)
+
+        print([(x,  z) for (x,  z) in zip(y_true,  predicted)])
+        res = classification_report(y_true=y_true, y_pred=predicted)
+        print(res)
 
     def run(self, epochs: int = 100):
         def f(row):
@@ -71,3 +85,4 @@ class PSO:
                 swarm_best_pos = pos[swarm_best_pos_idx]
 
             print(f"Iter {i} best fitness: {np.max(new_fitness)}")
+        self.print_report(swarm_best_pos)

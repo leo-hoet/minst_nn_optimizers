@@ -90,6 +90,7 @@ class NNModel:
             layer.set_weights(w)
 
     def predict_digit(self, image):
+        image = image.reshape(1, 784)
         prediction = self.model.predict(image)
         return np.argmax(prediction)
 
@@ -121,4 +122,4 @@ class NNModel:
 
     def fitness(self, x_test, y_test) -> float:
         metrics = self.metrics(x_test, y_test)
-        return metrics['accuracy']
+        return metrics['f1_score']
