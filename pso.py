@@ -14,7 +14,6 @@ class PSO:
         self._y_train = y_train
         self._x_test = x_test.reshape(x_test.shape[0], 784)
         self._y_test = y_test
-        print(collections.Counter(self._y_test))  # Print ocurrences of each class
 
         self._w = w
         self._c1 = c_local
@@ -22,6 +21,7 @@ class PSO:
 
         self._n_particles = n_particles
         self._model = NNModel()
+        self._best_weights = None
 
     def randomize_arr(self):
         return np.random.random((self._n_particles, self._model.len_params))
@@ -39,9 +39,9 @@ class PSO:
 
         return new_vel
 
-    def print_report(self, w):
+    def print_report(self):
         y_true = self._y_test
-        self._model.set_custom_weights(w)
+        self._model.set_custom_weights(self._best_weights)
 
         predicted = self._model.model.predict(self._x_test)
         predicted = np.argmax(predicted, axis=1)
@@ -50,7 +50,7 @@ class PSO:
         res = classification_report(y_true=y_true, y_pred=predicted)
         print(res)
 
-    def run(self, epochs: int = 100):
+    def train(self, epochs: int = 100):
         def f(row):
             return self.ind_fitness(row)
 
@@ -85,4 +85,4 @@ class PSO:
                 swarm_best_pos = pos[swarm_best_pos_idx]
 
             print(f"Iter {i} best fitness: {np.max(new_fitness)}. Global best {swarn_best_fitness}")
-        self.print_report(swarm_best_pos)
+        self._best_weights = swarm_best_pos

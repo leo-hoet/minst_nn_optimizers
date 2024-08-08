@@ -39,11 +39,12 @@ def main():
     p = PSO(
         data=data,
         w=0.2,
-        c_local=10,
+        c_local=100,
         c_global=10,
-        n_particles=30
+        n_particles=10
     )
-    p.run(epochs=20)
+    p.train(epochs=20)
+    p.print_report()
 
 
 if __name__ == '__main__':

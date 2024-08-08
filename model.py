@@ -2,7 +2,7 @@ import math
 import numpy as np
 from keras import Input, Model
 from keras.src.layers import Dense
-from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
+from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score, average_precision_score, r2_score
 
 
 def _random_weights():
@@ -104,20 +104,18 @@ class NNModel:
 
     def metrics(self, X_test, y_true):
         # Get predictions
-        y_pred = self.model.predict(X_test)
+        y_pred = self.model.predict(X_test, verbose=0)
         y_pred_classes = np.argmax(y_pred, axis=1)
 
         # Calculate metrics
         accuracy = accuracy_score(y_true, y_pred_classes)
-        # precision = precision_score(y_true, y_pred_classes, average='weighted')
-        recall = recall_score(y_true, y_pred_classes, average='weighted')
         f1 = f1_score(y_true, y_pred_classes, average='weighted')
+        r2 = r2_score(y_true, y_pred_classes,)
 
         return {
             'accuracy': accuracy,
-            # 'precision': precision,
-            'recall': recall,
-            'f1_score': f1
+            'f1_score': f1,
+            'r2':  r2
         }
 
     def fitness(self, x_test, y_test) -> float:
