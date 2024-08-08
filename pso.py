@@ -12,8 +12,8 @@ class PSO:
 
         self._x_train = x_train.reshape(x_train.shape[0], 784)
         self._y_train = y_train
-        self._x_test = x_test.reshape(x_test.shape[0], 784)[:100]
-        self._y_test = y_test[:100]
+        self._x_test = x_test.reshape(x_test.shape[0], 784)
+        self._y_test = y_test
         print(collections.Counter(self._y_test))  # Print ocurrences of each class
 
         self._w = w
@@ -28,7 +28,7 @@ class PSO:
 
     def ind_fitness(self, pos) -> float:
         self._model.set_custom_weights(pos)
-        return self._model.fitness(self._x_test, self._y_test)
+        return self._model.fitness(self._x_train, self._y_train)
 
     def update_vel(self, r1, r2, curr_vel, bests_pos, pos, swarm_best):
         new_vel = self._w * curr_vel  # Interia
@@ -84,5 +84,5 @@ class PSO:
                 swarn_best_fitness = new_fitness[swarm_best_pos_idx]
                 swarm_best_pos = pos[swarm_best_pos_idx]
 
-            print(f"Iter {i} best fitness: {np.max(new_fitness)}")
+            print(f"Iter {i} best fitness: {np.max(new_fitness)}. Global best {swarn_best_fitness}")
         self.print_report(swarm_best_pos)
