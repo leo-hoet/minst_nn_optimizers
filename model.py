@@ -90,7 +90,7 @@ class NNModel:
 
     def predict_digit(self, image):
         image = image.reshape(1, 784)
-        prediction = self.model.predict(image, verbose=0)
+        prediction = self.model.predict(image)
         return np.argmax(prediction)
 
     def get_weights_as_numpy(self):
@@ -103,7 +103,7 @@ class NNModel:
 
     def metrics(self, X_test, y_true):
         # Get predictions
-        y_pred = self.model.predict(X_test)
+        y_pred = self.model.predict(X_test, verbose=0)
         y_pred_classes = np.argmax(y_pred, axis=1)
 
         # Calculate metrics
