@@ -1,5 +1,4 @@
 
-import collections
 import numpy as np
 from sklearn.metrics import classification_report
 from model import NNModel
@@ -55,6 +54,8 @@ class PSO:
             return self.ind_fitness(row)
 
         pos = self.randomize_arr()
+        if self._best_weights is not None:
+            pos[-1] = self._best_weights
         bests = np.copy(pos)
         vel = self.randomize_arr()
         fitness = np.apply_along_axis(f, 1, pos)
