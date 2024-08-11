@@ -1,4 +1,5 @@
 
+from typing import List
 import numpy as np
 from sklearn.metrics import classification_report
 from model import NNModel
@@ -49,7 +50,7 @@ class PSO:
         res = classification_report(y_true=y_true, y_pred=predicted)
         print(res)
 
-    def train(self, epochs: int = 100):
+    def train(self, epochs: int = 100) -> List[float]:
         def f(row):
             return self.ind_fitness(row)
 
@@ -63,6 +64,8 @@ class PSO:
         swarm_best_pos_idx = np.argmax(fitness)
         swarm_best_pos = pos[swarm_best_pos_idx]
         swarn_best_fitness = np.max(fitness)
+
+        global_bests = [swarn_best_fitness]
 
         for i in range(epochs):
 
@@ -86,4 +89,6 @@ class PSO:
                 swarm_best_pos = pos[swarm_best_pos_idx]
 
             print(f"Iter {i} best fitness: {np.max(new_fitness)}. Global best {swarn_best_fitness}")
+            global_bests.append(swarn_best_fitness)
         self._best_weights = swarm_best_pos
+        return global_bests

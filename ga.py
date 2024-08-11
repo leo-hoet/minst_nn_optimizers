@@ -1,42 +1,30 @@
-import time
-import tensorflow as tf
-from model import NNModel
-import pandas as pd
-import matplotlib.pyplot as plt
-import random
 import numpy as np
+import random
+import matplotlib.pyplot as plt
+import pandas as pd
+from model import NNModel
+import tensorflow as tf
+from typing import List
+import time
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
-# Load and preprocess the MNIST dataset
-(x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
-# Normalize pixels between 0 and 1
-x_train, x_test = x_train / 255.0, x_test / 255.0
-
-# Flatten the images
-x_train = x_train.reshape(x_train.shape[0], 784)
-x_test = x_test.reshape(x_test.shape[0], 784)
-
-model = NNModel()
 
 # Función para crear la población inicial, es decir, correr la red neuronal, obtener los pesos (genes) y el accuracy (aptitud). Toma como arg el tamaño de la población y el modelo, retorna la población inicial (df)
 
 
-def firstPop(popSize, model):
+def firstPop(popSize, model, data):
 
     initInds = []  # Lista para almacenar los individuos iniciales
     initFit = []  # Lista para almacenar las aptitudes iniciales
+    x_test, y_test = data
 
     for i in range(popSize):
-
-        t0 = time.perf_counter()
-        model.randomize_weights()
-        metrics = model.metrics(x_test, y_test)
-        t1 = time.perf_counter()
         ind = model.get_weights_as_numpy()
         # fit = model.metrics(x_test, y_test).get("accuracy")
         fit = model.metrics(x_test, y_test).get("f1_score")
         initInds.append(ind)
         initFit.append(fit)
-        print(f"ELAPSED TIME {t1-t0} ms {metrics=}")
         # Concatenando individuos y aptitudes para formar la matriz de población inicial
         popInit = pd.DataFrame(list(zip(initInds, initFit)),
                                columns=['individuos', 'aptitudes'])
@@ -154,8 +142,9 @@ def mutatePop(parents, children, popSize):
 # Función para dejar lista la población de la siguiente generación. Calcula el fitness de los individuos, testeando el modelo con sus pesos. Toma como arg el tamaño de la población, el modelo y la población actual mutada. Retorna la nueva población
 
 
-def fitnessNextGeneration(popSize, model, mutatedPop):
+def fitnessNextGeneration(popSize, model, mutatedPop, data):
 
+    x_test, y_test = data
     Inds = []  # Lista para almacenar los individuos de la siguiente generación
     Fits = []  # Lista para almacenar las aptitudes de la siguiente generación
 
@@ -171,7 +160,6 @@ def fitnessNextGeneration(popSize, model, mutatedPop):
         fit = model.metrics(x_test, y_test).get("f1_score")
         Inds.append(ind)
         Fits.append(fit)
-        print(f"ELAPSED TIME {t1-t0} ms {metrics=}")
         # Concatenando individuos y aptitudes para formar la matriz de población inicial
         newPop = pd.DataFrame(list(zip(Inds, Fits)),
                               columns=['individuos', 'aptitudes'])
@@ -181,9 +169,9 @@ def fitnessNextGeneration(popSize, model, mutatedPop):
 # Función para optimizar el modelo. Utiliza las funciones anteriores y las itera cierto número de generaciónes. Recibe como argumento todo lo que necesitan las anteriores funciones para operar. Retorna el individuo más óptimo de la última generación y la lista de más óptimos por cada generación
 
 
-def optimizeModel(generations, popSize, model):
+def optimizeModel(generations, popSize, model, data):
 
-    popInit = firstPop(popSize, model)  # Creando la población inicial
+    popInit = firstPop(popSize, model, data)  # Creando la población inicial
     savedFit = []  # Guardar la aptitud del mejor indivuo por generación
 
     # Una vez se tienen los individuos de la primera poplación, se puede seguir iterando por la cantidad de generaciones necesarias
@@ -199,7 +187,7 @@ def optimizeModel(generations, popSize, model):
         children = breedPop(parents)  # Cruzando los padres de la población
         mutatedPopulation = mutatePop(parents, children, popSize)  # Mutando la población
         # Nueva población para la siguiente generación
-        newPopulation = fitnessNextGeneration(popSize, model, mutatedPopulation)
+        newPopulation = fitnessNextGeneration(popSize, model, mutatedPopulation, data)
         savedFit.append(popSorted.iloc[0][1])
 
     finalPopSorted = sortByFit(newPopulation)
@@ -207,15 +195,13 @@ def optimizeModel(generations, popSize, model):
     return savedFit, finalPopSorted
 
 
-generations = 10  # Número de generaciones
-popSize = 80  # Tamaño de la población
-aptOptimos, poblacionFinal = optimizeModel(generations, popSize, model)
-optimoFinal = aptOptimos[0]
+def run_ga(generations=10, pop_size=80, sample_size=2000) -> List[float]:
+    model = NNModel()
 
-# create data
-optimos = aptOptimos
-generaciones = range(0, generations)
+    data = tf.keras.datasets.mnist.load_data()
+    (x_train, y_train), _ = data
+    x_train = x_train.reshape(x_train.shape[0], 784)[:sample_size]
+    y_train = y_train[:sample_size]
 
-# plot line
-plt.plot(generaciones, optimos)
-plt.show()
+    aptOptimos, pop = optimizeModel(generations, pop_size, model, (x_train, y_train))
+    return aptOptimos, pop
