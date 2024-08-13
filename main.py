@@ -36,10 +36,12 @@ def some_tests():
 
 def main():
     data = tf.keras.datasets.mnist.load_data()
+    (x_train, y_train), (x_test, y_test) = data
+    data = (x_train, y_train), (x_test, y_test)
     p = PSO(
         data=data,
-        w=0.2,
-        c_local=100,
+        w=1.5,
+        c_local=20,
         c_global=10,
         n_particles=10
     )
