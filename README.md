@@ -30,7 +30,7 @@ se debe hacer en el codigo fuente
 
 ### Localmente
 Requerimientos:
-- python3
+- python version >= 3.8
 - pip
 
 Inslatar las dependencias con: 
