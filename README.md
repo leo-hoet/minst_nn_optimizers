@@ -91,3 +91,5 @@ Best fitnesses for each generation  [0.019355488418932528, 0.019355488418932528,
 ```
 
 El codigo se puede encontrar en https://github.com/leo-hoet/minst_nn_optimizers
+
+Realizado por Leonardo Hoet y Brayan Segura
