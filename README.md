@@ -27,6 +27,8 @@ se debe hacer en el codigo fuente
 
 ## Instalacion
 
+
+### Localmente
 Requerimientos:
 - python3
 - pip
@@ -35,6 +37,9 @@ Inslatar las dependencias con:
 ```bash
 pip3 install -r requirements.txt
 ```
+
+### Docker
+Se puede instalar dentro de un [devcontainer](https://containers.dev/) especificado en el archivo `.devcontainer/devcontainer.json`
 
 
 ## Uso
@@ -82,7 +87,7 @@ python3 ga.py
 Salida:
 
 ```text
-Fitnesses for each generation  [0.019355488418932528, 0.019355488418932528, 0.019355488418932528, 0.020562248995983936, 0.020562248995983936, 0.021177944862155386, 0.021177944862155386, 0.021177944862155386, 0.021177944862155386, 0.021177944862155386
+Best fitnesses for each generation  [0.019355488418932528, 0.019355488418932528, 0.019355488418932528, 0.020562248995983936, 0.020562248995983936, 0.021177944862155386, 0.021177944862155386, 0.021177944862155386, 0.021177944862155386, 0.021177944862155386
 ```
 
 

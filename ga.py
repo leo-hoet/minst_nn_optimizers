@@ -209,4 +209,4 @@ def run_ga(generations=10, pop_size=80, sample_size=2000) -> List[float]:
 
 if __name__ == '__main__':
     fitnesses, _ = run_ga(generations=10, pop_size=10, sample_size=600)
-    print("Fitnesses for each generation ", fitnesses)
+    print("Best fitnesses for each generation ", fitnesses)
